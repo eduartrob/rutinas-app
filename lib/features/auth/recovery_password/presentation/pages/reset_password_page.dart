@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/recovery_password_provider.dart';
 import 'package:app/features/auth/login/presentation/widgets/auth_widgets.dart';
+import 'package:app/core/router/routes.dart';
 
-/// Reset password page - Step 3
+/// Página de restablecer contraseña - Paso 3
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
 
@@ -17,7 +19,7 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
+  bool _obscureConfirm = true;
   
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -53,77 +55,23 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
       );
       
       if (success && mounted) {
-        // Show success and go back to login
-        showDialog(
-          context: context,
-          barrierDismissible: false,
-          builder: (context) => AlertDialog(
-            backgroundColor: const Color(0xFF252537),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF4CAF50).withOpacity(0.2),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.check_circle,
-                    color: Color(0xFF4CAF50),
-                    size: 48,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Password Reset\nSuccessful!',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'You can now login with your new password',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(color: Colors.grey[400]),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      provider.reset();
-                      Navigator.of(context).popUntil((route) => route.isFirst);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4CAF50),
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: const Text('Back to Login'),
-                  ),
-                ),
-              ],
-            ),
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('¡Contraseña actualizada exitosamente!'),
+            backgroundColor: Color(0xFF4CAF50),
           ),
         );
+        context.go(AppRoutes.loginPath);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -133,11 +81,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF252537),
+                  color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withOpacity(0.1),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -148,53 +96,48 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Icon
+                      // Icono
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF4CAF50).withOpacity(0.2),
+                          color: colorScheme.primary.withOpacity(0.2),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.lock_reset,
-                          color: Color(0xFF4CAF50),
+                          color: colorScheme.primary,
                           size: 48,
                         ),
                       ),
                       const SizedBox(height: 24),
                       
-                      // Title
-                      const Text(
-                        'Create New Password',
+                      // Título
+                      Text(
+                        'Nueva Contraseña',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: colorScheme.onSurface,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 12),
                       
+                      // Subtítulo
                       Text(
-                        'Your new password must be different from previous passwords',
+                        'Crea una nueva contraseña segura para tu cuenta',
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          color: Colors.grey[400],
+                          color: colorScheme.onSurface.withOpacity(0.6),
                           fontSize: 14,
                         ),
                       ),
                       const SizedBox(height: 32),
                       
-                      // Password field
-                      AuthTextField(
-                        label: 'New Password',
-                        hintText: 'Enter new password',
+                      // Campo de nueva contraseña
+                      TextFormField(
                         controller: _passwordController,
                         obscureText: _obscurePassword,
-                        onToggleVisibility: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
+                        style: TextStyle(color: colorScheme.onSurface),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Por favor ingresa una contraseña';
@@ -204,20 +147,24 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
                           }
                           return null;
                         },
+                        decoration: InputDecoration(
+                          labelText: 'Nueva contraseña',
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                            ),
+                            onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 20),
                       
-                      // Confirm password field
-                      AuthTextField(
-                        label: 'Confirm Password',
-                        hintText: 'Confirm new password',
+                      // Campo de confirmar contraseña
+                      TextFormField(
                         controller: _confirmPasswordController,
-                        obscureText: _obscureConfirmPassword,
-                        onToggleVisibility: () {
-                          setState(() {
-                            _obscureConfirmPassword = !_obscureConfirmPassword;
-                          });
-                        },
+                        obscureText: _obscureConfirm,
+                        style: TextStyle(color: colorScheme.onSurface),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Por favor confirma tu contraseña';
@@ -227,10 +174,20 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
                           }
                           return null;
                         },
+                        decoration: InputDecoration(
+                          labelText: 'Confirmar contraseña',
+                          prefixIcon: const Icon(Icons.lock_outline),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _obscureConfirm ? Icons.visibility_off : Icons.visibility,
+                            ),
+                            onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 8),
                       
-                      // Error message
+                      // Mensaje de error
                       Consumer<RecoveryPasswordProvider>(
                         builder: (context, provider, _) {
                           if (provider.errorMessage != null) {
@@ -238,8 +195,8 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
                               padding: const EdgeInsets.only(top: 8),
                               child: Text(
                                 provider.errorMessage!,
-                                style: const TextStyle(
-                                  color: Colors.redAccent,
+                                style: TextStyle(
+                                  color: colorScheme.error,
                                   fontSize: 14,
                                 ),
                               ),
@@ -250,11 +207,11 @@ class _ResetPasswordPageState extends State<ResetPasswordPage>
                       ),
                       const SizedBox(height: 24),
                       
-                      // Reset password button
+                      // Botón de restablecer
                       Consumer<RecoveryPasswordProvider>(
                         builder: (context, provider, _) {
                           return AuthPrimaryButton(
-                            text: 'Reset Password',
+                            text: 'Restablecer Contraseña',
                             isLoading: provider.isLoading,
                             onPressed: _onResetPassword,
                           );

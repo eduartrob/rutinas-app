@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/register_provider.dart';
 import 'package:app/features/auth/login/presentation/widgets/auth_widgets.dart';
+import 'package:app/core/router/routes.dart';
 
-/// Register page with dark theme matching the mockup
+/// Página de registro con tema oscuro
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -69,15 +71,17 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
             backgroundColor: const Color(0xFF4CAF50),
           ),
         );
-        Navigator.pop(context); // Go back to login
+        context.go(AppRoutes.loginPath);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -89,28 +93,36 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Logo and title at top
+                    // Logo y título
                     const AuthLogo(filled: false, size: 60),
                     const SizedBox(height: 24),
-                    const Text(
-                      'Create Your Account',
+                    Text(
+                      'Crear Cuenta',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: colorScheme.onSurface,
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Regístrate para comenzar',
+                      style: TextStyle(
+                        color: colorScheme.onSurface.withOpacity(0.6),
+                        fontSize: 14,
+                      ),
+                    ),
                     const SizedBox(height: 32),
                     
-                    // Form container
+                    // Contenedor del formulario
                     Container(
                       padding: const EdgeInsets.all(24),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF252537),
+                        color: colorScheme.surface,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.black.withOpacity(0.3),
+                            color: Colors.black.withOpacity(0.1),
                             blurRadius: 20,
                             offset: const Offset(0, 10),
                           ),
@@ -121,28 +133,28 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            // Email field
+                            // Campo de email
                             AuthTextField(
-                              label: 'Email',
-                              hintText: 'you@example.com',
+                              label: 'Correo electrónico',
+                              hintText: 'tu@correo.com',
                               controller: _emailController,
                               keyboardType: TextInputType.emailAddress,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
-                                  return 'Por favor ingresa tu email';
+                                  return 'Por favor ingresa tu correo';
                                 }
                                 if (!value.contains('@')) {
-                                  return 'Por favor ingresa un email válido';
+                                  return 'Por favor ingresa un correo válido';
                                 }
                                 return null;
                               },
                             ),
                             const SizedBox(height: 20),
                             
-                            // Username field
+                            // Campo de nombre de usuario
                             AuthTextField(
-                              label: 'Username',
-                              hintText: 'Choose a username',
+                              label: 'Nombre de usuario',
+                              hintText: 'Elige un nombre de usuario',
                               controller: _usernameController,
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
@@ -156,10 +168,10 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                             ),
                             const SizedBox(height: 20),
                             
-                            // Phone field
+                            // Campo de teléfono
                             AuthTextField(
-                              label: 'Phone',
-                              hintText: 'Enter your phone number',
+                              label: 'Teléfono',
+                              hintText: 'Ingresa tu número de teléfono',
                               controller: _phoneController,
                               keyboardType: TextInputType.phone,
                               validator: (value) {
@@ -171,12 +183,12 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                             ),
                             const SizedBox(height: 20),
                             
-                            // Password field
+                            // Campo de contraseña
                             Consumer<RegisterProvider>(
                               builder: (context, provider, _) {
                                 return AuthTextField(
-                                  label: 'Password',
-                                  hintText: 'Enter your password',
+                                  label: 'Contraseña',
+                                  hintText: 'Ingresa tu contraseña',
                                   controller: _passwordController,
                                   obscureText: provider.obscurePassword,
                                   onToggleVisibility: provider.togglePasswordVisibility,
@@ -194,7 +206,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                             ),
                             const SizedBox(height: 8),
                             
-                            // Error message
+                            // Mensaje de error
                             Consumer<RegisterProvider>(
                               builder: (context, provider, _) {
                                 if (provider.errorMessage != null) {
@@ -202,8 +214,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                     padding: const EdgeInsets.only(top: 8),
                                     child: Text(
                                       provider.errorMessage!,
-                                      style: const TextStyle(
-                                        color: Colors.redAccent,
+                                      style: TextStyle(
+                                        color: colorScheme.error,
                                         fontSize: 14,
                                       ),
                                     ),
@@ -214,11 +226,11 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                             ),
                             const SizedBox(height: 24),
                             
-                            // Sign up button
+                            // Botón de registro
                             Consumer<RegisterProvider>(
                               builder: (context, provider, _) {
                                 return AuthPrimaryButton(
-                                  text: 'Sign Up',
+                                  text: 'Crear Cuenta',
                                   isLoading: provider.isLoading,
                                   onPressed: _onRegister,
                                 );
@@ -230,20 +242,18 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                     ),
                     const SizedBox(height: 16),
                     
-                    // Sign in link (outside main container)
+                    // Link de inicio de sesión
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.symmetric(vertical: 16),
                       decoration: BoxDecoration(
-                        color: const Color(0xFF252537),
+                        color: colorScheme.surface,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: AuthLinkButton(
-                        text: 'Already have an account?',
-                        linkText: 'Sign In',
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+                        text: '¿Ya tienes cuenta?',
+                        linkText: 'Inicia Sesión',
+                        onPressed: () => context.pop(),
                       ),
                     ),
                   ],

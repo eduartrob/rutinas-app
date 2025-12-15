@@ -2,26 +2,23 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'http_client_provider.dart';
 import '../error/exceptions.dart';
+import '../services/auth_token_service.dart';
 
 /// HTTP client with GET, POST, and DELETE methods for API communication.
 class BaseApiClient {
   final http.Client _client; 
-  String? _authToken;
+  final AuthTokenService _authTokenService = AuthTokenService();
   
   BaseApiClient() : _client = HttpClientProvider().client;
 
-  /// Set authorization token for authenticated requests
-  void setAuthToken(String? token) {
-    _authToken = token;
-  }
-
-  /// Get headers with optional auth token
-  Map<String, String> _getHeaders() {
+  /// Get headers with auth token from secure storage
+  Future<Map<String, String>> _getHeaders() async {
+    final token = await _authTokenService.getToken();
     final headers = <String, String>{
       'Content-Type': 'application/json',
     };
-    if (_authToken != null) {
-      headers['Authorization'] = 'Bearer $_authToken';
+    if (token != null) {
+      headers['Authorization'] = 'Bearer $token';
     }
     return headers;
   }
@@ -38,7 +35,7 @@ class BaseApiClient {
     try {
       final response = await _client.get(
         uri,
-        headers: _getHeaders(),
+        headers: await _getHeaders(),
       ).timeout(const Duration(seconds: 20));
 
       return _handleResponse(response);
@@ -58,9 +55,16 @@ class BaseApiClient {
     try {
       final response = await _client.post(
         uri,
-        headers: _getHeaders(),
+        headers: await _getHeaders(),
         body: body != null ? json.encode(body) : null,
       ).timeout(const Duration(seconds: 20));
+
+      // Auto-capture Authorization token from response headers
+      final authHeader = response.headers['authorization'];
+      if (authHeader != null && authHeader.startsWith('Bearer ')) {
+        final token = authHeader.substring(7); // Remove "Bearer " prefix
+        await _authTokenService.saveToken(token);
+      }
 
       return _handleResponse(response);
       
@@ -78,7 +82,7 @@ class BaseApiClient {
     try {
       final response = await _client.delete(
         uri,
-        headers: _getHeaders(),
+        headers: await _getHeaders(),
       ).timeout(const Duration(seconds: 20));
 
       return _handleResponse(response);
@@ -98,7 +102,7 @@ class BaseApiClient {
     try {
       final response = await _client.put(
         uri,
-        headers: _getHeaders(),
+        headers: await _getHeaders(),
         body: body != null ? json.encode(body) : null,
       ).timeout(const Duration(seconds: 20));
 
@@ -141,5 +145,10 @@ class BaseApiClient {
       default:
         throw UnknownException(errorMessage ?? 'Error desconocido: ${response.statusCode}');
     }
+  }
+
+  /// Clear auth token (logout)
+  Future<void> clearAuthToken() async {
+    await _authTokenService.clearAll();
   }
 }

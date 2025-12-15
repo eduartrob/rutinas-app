@@ -16,11 +16,16 @@ class RegisterRemoteDatasourceImpl implements RegisterRemoteDatasource {
 
   @override
   Future<LoginResponseModel> register(RegisterRequestModel request) async {
+    print('=== REGISTER DEBUG ===');
+    print('URL: ${ApiConfig.registerEndpoint}');
+    print('Body: ${request.toJson()}');
+    
     final response = await apiClient.post(
       url: ApiConfig.registerEndpoint,
       body: request.toJson(),
     );
     
+    print('Response: $response');
     return LoginResponseModel.fromJson(response);
   }
 }

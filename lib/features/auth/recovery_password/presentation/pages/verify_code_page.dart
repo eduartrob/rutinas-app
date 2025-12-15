@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/recovery_password_provider.dart';
 import 'package:app/features/auth/login/presentation/widgets/auth_widgets.dart';
-import 'reset_password_page.dart';
+import 'package:app/core/router/routes.dart';
 
-/// Verify code page - Step 2
+/// Página de verificación de código - Paso 2
 class VerifyCodePage extends StatefulWidget {
   const VerifyCodePage({super.key});
 
@@ -61,20 +62,17 @@ class _VerifyCodePageState extends State<VerifyCodePage>
       final success = await provider.verifyCode(code: code);
       
       if (success && mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const ResetPasswordPage(),
-          ),
-        );
+        context.push(AppRoutes.resetPasswordPath);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -84,11 +82,11 @@ class _VerifyCodePageState extends State<VerifyCodePage>
               child: Container(
                 padding: const EdgeInsets.all(24),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF252537),
+                  color: colorScheme.surface,
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.3),
+                      color: Colors.black.withOpacity(0.1),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
@@ -99,40 +97,40 @@ class _VerifyCodePageState extends State<VerifyCodePage>
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Icon
+                      // Icono
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF4CAF50).withOpacity(0.2),
+                          color: colorScheme.primary.withOpacity(0.2),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.email_outlined,
-                          color: Color(0xFF4CAF50),
+                          color: colorScheme.primary,
                           size: 48,
                         ),
                       ),
                       const SizedBox(height: 24),
                       
-                      // Title
-                      const Text(
-                        'Check Your Email',
+                      // Título
+                      Text(
+                        'Revisa tu correo',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: colorScheme.onSurface,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       const SizedBox(height: 12),
                       
-                      // Subtitle
+                      // Subtítulo
                       Consumer<RecoveryPasswordProvider>(
                         builder: (context, provider, _) {
                           return Text(
-                            'We sent a verification code to\n${provider.email ?? 'your email'}',
+                            'Enviamos un código de verificación a\n${provider.email ?? 'tu correo'}',
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                              color: Colors.grey[400],
+                              color: colorScheme.onSurface.withOpacity(0.6),
                               fontSize: 14,
                             ),
                           );
@@ -140,13 +138,13 @@ class _VerifyCodePageState extends State<VerifyCodePage>
                       ),
                       const SizedBox(height: 32),
                       
-                      // Code input field
+                      // Campo de código
                       TextFormField(
                         controller: _codeController,
                         keyboardType: TextInputType.number,
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: colorScheme.onSurface,
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 8,
@@ -167,32 +165,14 @@ class _VerifyCodePageState extends State<VerifyCodePage>
                         decoration: InputDecoration(
                           hintText: '------',
                           hintStyle: TextStyle(
-                            color: Colors.grey[600],
+                            color: colorScheme.onSurface.withOpacity(0.3),
                             letterSpacing: 8,
-                          ),
-                          filled: true,
-                          fillColor: const Color(0xFF2A2A3E),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide.none,
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(color: Color(0xFF4CAF50), width: 2),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 16,
-                            vertical: 20,
                           ),
                         ),
                       ),
                       const SizedBox(height: 8),
                       
-                      // Error message
+                      // Mensaje de error
                       Consumer<RecoveryPasswordProvider>(
                         builder: (context, provider, _) {
                           if (provider.errorMessage != null) {
@@ -200,8 +180,8 @@ class _VerifyCodePageState extends State<VerifyCodePage>
                               padding: const EdgeInsets.only(top: 8),
                               child: Text(
                                 provider.errorMessage!,
-                                style: const TextStyle(
-                                  color: Colors.redAccent,
+                                style: TextStyle(
+                                  color: colorScheme.error,
                                   fontSize: 14,
                                 ),
                               ),
@@ -212,11 +192,11 @@ class _VerifyCodePageState extends State<VerifyCodePage>
                       ),
                       const SizedBox(height: 24),
                       
-                      // Verify button
+                      // Botón de verificar
                       Consumer<RecoveryPasswordProvider>(
                         builder: (context, provider, _) {
                           return AuthPrimaryButton(
-                            text: 'Verify Code',
+                            text: 'Verificar Código',
                             isLoading: provider.isLoading,
                             onPressed: _onVerifyCode,
                           );
@@ -224,14 +204,12 @@ class _VerifyCodePageState extends State<VerifyCodePage>
                       ),
                       const SizedBox(height: 16),
                       
-                      // Resend link
+                      // Link para volver
                       TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
+                        onPressed: () => context.pop(),
                         child: Text(
-                          'Didn\'t receive code? Go back',
-                          style: TextStyle(color: Colors.grey[400]),
+                          '¿No recibiste el código? Volver',
+                          style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
                         ),
                       ),
                     ],

@@ -4,16 +4,19 @@ import '../../domain/entities/user_entity.dart';
 class LoginResponseModel {
   final String message;
   final UserModel data;
+  final String? token;
 
   LoginResponseModel({
     required this.message,
     required this.data,
+    this.token,
   });
 
   factory LoginResponseModel.fromJson(Map<String, dynamic> json) {
     return LoginResponseModel(
       message: json['message'] ?? '',
       data: UserModel.fromJson(json['data'] ?? {}),
+      token: json['token'],
     );
   }
 }
@@ -21,18 +24,20 @@ class LoginResponseModel {
 /// User data model from API response
 class UserModel extends UserEntity {
   const UserModel({
+    required super.id,
     required super.name,
     required super.email,
-    required super.phone,
+    super.phone,
     super.region,
     super.profileImage,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
+      id: json['_id'] ?? json['id'] ?? '',
       name: json['name'] ?? '',
       email: json['email'] ?? '',
-      phone: json['phone'] ?? '',
+      phone: json['phone'],
       region: json['region'],
       profileImage: json['profileImage'],
     );
@@ -40,6 +45,7 @@ class UserModel extends UserEntity {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'name': name,
       'email': email,
       'phone': phone,
@@ -51,6 +57,7 @@ class UserModel extends UserEntity {
   /// Convert to domain entity
   UserEntity toEntity() {
     return UserEntity(
+      id: id,
       name: name,
       email: email,
       phone: phone,
@@ -59,4 +66,3 @@ class UserModel extends UserEntity {
     );
   }
 }
-

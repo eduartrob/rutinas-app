@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/login_provider.dart';
 import '../widgets/auth_widgets.dart';
-import 'package:app/features/auth/register/presentation/pages/register_page.dart';
-import 'package:app/features/auth/recovery_password/presentation/pages/forgot_password_page.dart';
+import 'package:app/core/router/routes.dart';
 
-/// Login page with dark theme matching the mockup
+/// Página de inicio de sesión con tema oscuro
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -59,22 +59,23 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       );
       
       if (success && mounted) {
-        // Navigate to home or show success
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('¡Bienvenido ${provider.user?.name}!'),
             backgroundColor: const Color(0xFF4CAF50),
           ),
         );
-        // TODO: Navigate to home page
+        context.go(AppRoutes.homePath);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -86,11 +87,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 child: Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF252537),
+                    color: colorScheme.surface,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withOpacity(0.1),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -105,33 +106,41 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         const AuthLogo(filled: true, size: 60),
                         const SizedBox(height: 24),
                         
-                        // Title
-                        const Text(
-                          'Welcome Back',
+                        // Título
+                        Text(
+                          'Bienvenido',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: colorScheme.onSurface,
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Inicia sesión para continuar',
+                          style: TextStyle(
+                            color: colorScheme.onSurface.withOpacity(0.6),
+                            fontSize: 14,
+                          ),
+                        ),
                         const SizedBox(height: 32),
                         
-                        // Email field
+                        // Campo de email
                         AuthTextField(
-                          label: 'Email or Username',
-                          hintText: 'Enter your email or username',
+                          label: 'Correo electrónico',
+                          hintText: 'Ingresa tu correo',
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Por favor ingresa tu email';
+                              return 'Por favor ingresa tu correo';
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: 20),
                         
-                        // Password label with forgot link
+                        // Contraseña con link de olvidé
                         Consumer<LoginProvider>(
                           builder: (context, provider, _) {
                             return Column(
@@ -139,31 +148,24 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    const Text(
-                                      'Password',
+                                    Text(
+                                      'Contraseña',
                                       style: TextStyle(
-                                        color: Colors.white70,
+                                        color: colorScheme.onSurface.withOpacity(0.7),
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                     TextButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) => const ForgotPasswordPage(),
-                                          ),
-                                        );
-                                      },
+                                      onPressed: () => context.push(AppRoutes.forgotPasswordPath),
                                       style: TextButton.styleFrom(
                                         padding: EdgeInsets.zero,
                                         minimumSize: Size.zero,
                                       ),
-                                      child: const Text(
-                                        'Forgot Password?',
+                                      child: Text(
+                                        '¿Olvidaste tu contraseña?',
                                         style: TextStyle(
-                                          color: Color(0xFF64B5F6),
+                                          color: colorScheme.primary,
                                           fontSize: 14,
                                         ),
                                       ),
@@ -174,7 +176,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 TextFormField(
                                   controller: _passwordController,
                                   obscureText: provider.obscurePassword,
-                                  style: const TextStyle(color: Colors.white),
+                                  style: TextStyle(color: colorScheme.onSurface),
                                   validator: (value) {
                                     if (value == null || value.isEmpty) {
                                       return 'Por favor ingresa tu contraseña';
@@ -182,34 +184,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                     return null;
                                   },
                                   decoration: InputDecoration(
-                                    hintText: 'Enter your password',
-                                    hintStyle: TextStyle(color: Colors.grey[600]),
-                                    filled: true,
-                                    fillColor: const Color(0xFF2A2A3E),
-                                    border: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide.none,
-                                    ),
-                                    enabledBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: BorderSide(color: Colors.grey[700]!, width: 1),
-                                    ),
-                                    focusedBorder: OutlineInputBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                      borderSide: const BorderSide(color: Color(0xFF4CAF50), width: 2),
-                                    ),
+                                    hintText: 'Ingresa tu contraseña',
                                     suffixIcon: IconButton(
                                       icon: Icon(
                                         provider.obscurePassword 
                                             ? Icons.visibility_off 
                                             : Icons.visibility,
-                                        color: Colors.grey[500],
+                                        color: colorScheme.onSurface.withOpacity(0.5),
                                       ),
                                       onPressed: provider.togglePasswordVisibility,
-                                    ),
-                                    contentPadding: const EdgeInsets.symmetric(
-                                      horizontal: 16,
-                                      vertical: 16,
                                     ),
                                   ),
                                 ),
@@ -219,7 +202,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         ),
                         const SizedBox(height: 8),
                         
-                        // Error message
+                        // Mensaje de error
                         Consumer<LoginProvider>(
                           builder: (context, provider, _) {
                             if (provider.errorMessage != null) {
@@ -227,8 +210,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                 padding: const EdgeInsets.only(top: 8),
                                 child: Text(
                                   provider.errorMessage!,
-                                  style: const TextStyle(
-                                    color: Colors.redAccent,
+                                  style: TextStyle(
+                                    color: colorScheme.error,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -239,11 +222,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         ),
                         const SizedBox(height: 24),
                         
-                        // Login button
+                        // Botón de iniciar sesión
                         Consumer<LoginProvider>(
                           builder: (context, provider, _) {
                             return AuthPrimaryButton(
-                              text: 'Log In',
+                              text: 'Iniciar Sesión',
                               isLoading: provider.isLoading,
                               onPressed: _onLogin,
                             );
@@ -251,18 +234,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         ),
                         const SizedBox(height: 16),
                         
-                        // Sign up link
+                        // Link de registro
                         AuthLinkButton(
-                          text: "Don't have an account?",
-                          linkText: 'Sign Up',
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const RegisterPage(),
-                              ),
-                            );
-                          },
+                          text: '¿No tienes cuenta?',
+                          linkText: 'Regístrate',
+                          onPressed: () => context.push(AppRoutes.registerPath),
                         ),
                       ],
                     ),

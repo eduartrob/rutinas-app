@@ -68,4 +68,15 @@ class ApiConfig {
   
   /// DELETE - Delete routine
   static String deleteRoutineEndpoint(String id) => '$apiUrl/routines/delete/$id';
+
+  // ============ PROGRESS ENDPOINTS ============
+  
+  /// POST - Toggle habit completion
+  static String get toggleCompletionEndpoint => '$apiUrl/progress/toggle';
+  
+  /// GET - Get completions for a date
+  static String get completionsEndpoint => '$apiUrl/progress/completions';
+  
+  /// GET - Get progress stats
+  static String get progressStatsEndpoint => '$apiUrl/progress/stats';
 }

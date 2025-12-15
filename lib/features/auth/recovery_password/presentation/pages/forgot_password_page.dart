@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../providers/recovery_password_provider.dart';
 import 'package:app/features/auth/login/presentation/widgets/auth_widgets.dart';
+import 'package:app/core/router/routes.dart';
 import 'verify_code_page.dart';
 
-/// Forgot password page - Step 1
+/// Página de recuperación de contraseña - Paso 1
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
 
@@ -56,20 +58,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
       );
       
       if (success && mounted) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => const VerifyCodePage(),
-          ),
-        );
+        context.push(AppRoutes.verifyCodePath);
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    
     return Scaffold(
-      backgroundColor: const Color(0xFF1A1A2E),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -81,11 +80,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                 child: Container(
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF252537),
+                    color: colorScheme.surface,
                     borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.3),
+                        color: Colors.black.withOpacity(0.1),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -101,11 +100,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                         const Center(child: AuthLogo(filled: false, size: 60)),
                         const SizedBox(height: 24),
                         
-                        // Title
-                        const Text(
-                          'Forgot Your\nPassword?',
+                        // Título
+                        Text(
+                          '¿Olvidaste tu\ncontraseña?',
                           style: TextStyle(
-                            color: Colors.white,
+                            color: colorScheme.onSurface,
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
                             height: 1.2,
@@ -113,35 +112,35 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                         ),
                         const SizedBox(height: 16),
                         
-                        // Subtitle
+                        // Subtítulo
                         Text(
-                          "No problem. Enter your email address and we'll send you a link to reset it.",
+                          'No te preocupes. Ingresa tu correo electrónico y te enviaremos un código para restablecerla.',
                           style: TextStyle(
-                            color: Colors.grey[400],
+                            color: colorScheme.onSurface.withOpacity(0.6),
                             fontSize: 14,
                           ),
                         ),
                         const SizedBox(height: 32),
                         
-                        // Email field
+                        // Campo de email
                         AuthTextField(
-                          label: 'Email Address',
-                          hintText: 'you@example.com',
+                          label: 'Correo electrónico',
+                          hintText: 'tu@correo.com',
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
-                              return 'Por favor ingresa tu email';
+                              return 'Por favor ingresa tu correo';
                             }
                             if (!value.contains('@')) {
-                              return 'Por favor ingresa un email válido';
+                              return 'Por favor ingresa un correo válido';
                             }
                             return null;
                           },
                         ),
                         const SizedBox(height: 8),
                         
-                        // Error message
+                        // Mensaje de error
                         Consumer<RecoveryPasswordProvider>(
                           builder: (context, provider, _) {
                             if (provider.errorMessage != null) {
@@ -149,8 +148,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                                 padding: const EdgeInsets.only(top: 8),
                                 child: Text(
                                   provider.errorMessage!,
-                                  style: const TextStyle(
-                                    color: Colors.redAccent,
+                                  style: TextStyle(
+                                    color: colorScheme.error,
                                     fontSize: 14,
                                   ),
                                 ),
@@ -161,11 +160,11 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                         ),
                         const SizedBox(height: 24),
                         
-                        // Send reset link button
+                        // Botón de enviar
                         Consumer<RecoveryPasswordProvider>(
                           builder: (context, provider, _) {
                             return AuthPrimaryButton(
-                              text: 'Send Reset Link',
+                              text: 'Enviar Código',
                               isLoading: provider.isLoading,
                               onPressed: _onSendResetLink,
                             );
@@ -173,17 +172,17 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage>
                         ),
                         const SizedBox(height: 16),
                         
-                        // Back to login link
+                        // Volver al login
                         Center(
                           child: TextButton(
                             onPressed: () {
                               context.read<RecoveryPasswordProvider>().reset();
-                              Navigator.pop(context);
+                              context.pop();
                             },
-                            child: const Text(
-                              'Back to Login',
+                            child: Text(
+                              'Volver al inicio de sesión',
                               style: TextStyle(
-                                color: Color(0xFF64B5F6),
+                                color: colorScheme.primary,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),

@@ -41,6 +41,10 @@ import '../features/routines/domain/repositories/routine_repository.dart';
 import '../features/routines/domain/usecases/routine_usecases.dart';
 import '../features/routines/presentation/providers/routines_provider.dart';
 
+// Progress feature
+import '../features/progress/data/datasources/progress_remote_datasource.dart';
+import '../features/progress/presentation/providers/progress_provider.dart';
+
 /// App module for dependency injection
 class AppModule {
   static final AppModule _instance = AppModule._internal();
@@ -90,6 +94,10 @@ class AppModule {
   late DeleteRoutineUseCase deleteRoutineUseCase;
   late RoutineRepository routineRepository;
   late RoutineRemoteDatasource routineRemoteDatasource;
+
+  // Progress feature
+  late ProgressProvider progressProvider;
+  late ProgressRemoteDatasource progressRemoteDatasource;
 
   void init() {
     // Core
@@ -141,5 +149,9 @@ class AppModule {
       toggleRoutineUseCase: toggleRoutineUseCase,
       deleteRoutineUseCase: deleteRoutineUseCase,
     );
+
+    // Progress feature
+    progressRemoteDatasource = ProgressRemoteDatasource(apiClient: apiClient);
+    progressProvider = ProgressProvider(datasource: progressRemoteDatasource);
   }
 }
