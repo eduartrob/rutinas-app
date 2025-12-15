@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:app/core/services/auth_token_service.dart';
+import 'package:app/core/config/api_config.dart';
 
 /// Service for storing habit completions locally and syncing with cloud
 class LocalStorageService {
@@ -12,7 +13,6 @@ class LocalStorageService {
 
   static const _completionsKey = 'habit_completions';
   static const _pendingSyncKey = 'pending_sync';
-  static const _baseUrl = 'http://54.144.29.244:3000/api';
 
   final AuthTokenService _authService = AuthTokenService();
 
@@ -143,7 +143,7 @@ class LocalStorageService {
       for (final item in pending) {
         try {
           final response = await http.post(
-            Uri.parse('$_baseUrl/progress/toggle'),
+            Uri.parse('${ApiConfig.apiUrl}/progress/toggle'),
             headers: {
               'Content-Type': 'application/json',
               'Authorization': 'Bearer $token',
