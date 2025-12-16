@@ -137,12 +137,14 @@ class _CreateRoutinePageState extends State<CreateRoutinePage> {
               onPressed: () => Navigator.pop(context),
               child: const Text('Cancelar'),
             ),
-            ElevatedButton(
+              ElevatedButton(
               onPressed: () {
                 if (nameController.text.trim().isEmpty) return;
+                final tempId = 'temp_${DateTime.now().millisecondsSinceEpoch}';
                 Navigator.pop(
                   context,
                   HabitEntity(
+                    id: tempId,
                     name: nameController.text.trim(),
                     category: selectedCategory,
                     time: timeController.text.isNotEmpty ? timeController.text.trim() : null,

@@ -115,7 +115,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
     for (final category in _categories.where((c) => c.isSelected)) {
       switch (category.id) {
         case 'salud_fisica':
-          habits.add(const HabitEntity(
+          habits.add(HabitEntity(
+            id: 'temp_fitness_${DateTime.now().millisecondsSinceEpoch}',
             name: 'Ejercicio 30 minutos',
             category: 'salud_fisica',
             time: '07:00 AM',
@@ -123,14 +124,16 @@ class _OnboardingPageState extends State<OnboardingPage> {
           ));
           break;
         case 'productividad':
-          habits.add(const HabitEntity(
+          habits.add(HabitEntity(
+            id: 'temp_productivity_${DateTime.now().millisecondsSinceEpoch}',
             name: 'Leer 10 páginas',
             category: 'productividad',
             emoji: '📚',
           ));
           break;
         case 'salud_mental':
-          habits.add(const HabitEntity(
+          habits.add(HabitEntity(
+            id: 'temp_mental_${DateTime.now().millisecondsSinceEpoch}',
             name: 'Meditar 15 minutos',
             category: 'salud_mental',
             time: '07:30 AM',
@@ -138,7 +141,8 @@ class _OnboardingPageState extends State<OnboardingPage> {
           ));
           break;
         case 'hogar':
-          habits.add(const HabitEntity(
+          habits.add(HabitEntity(
+            id: 'temp_home_${DateTime.now().millisecondsSinceEpoch}',
             name: 'Ordenar habitación',
             category: 'hogar',
             emoji: '🏠',

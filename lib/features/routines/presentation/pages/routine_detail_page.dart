@@ -35,7 +35,7 @@ class RoutineDetailPage extends StatelessWidget {
       backgroundColor: colorScheme.surface,
       body: Consumer<ProgressProvider>(
         builder: (context, provider, _) { 
-          final completedCount = routine.habits.where((h) => provider.isHabitCompleted(h.name.hashCode.toString())).length;
+          final completedCount = routine.habits.where((h) => provider.isHabitCompleted(h.id)).length;
           final progress = routine.habits.isEmpty ? 0.0 : completedCount / routine.habits.length;
 
           return CustomScrollView(
@@ -204,7 +204,7 @@ class RoutineDetailPage extends StatelessWidget {
                 delegate: SliverChildBuilderDelegate(
                   (context, index) {
                     final habit = routine.habits[index];
-                    final habitId = habit.name.hashCode.toString();
+                    final habitId = habit.id;
                     final isCompleted = provider.isHabitCompleted(habitId);
 
                     return Padding(

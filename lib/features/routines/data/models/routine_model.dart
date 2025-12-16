@@ -2,12 +2,14 @@ import 'package:app/features/routines/domain/entities/routine_entity.dart';
 
 /// Habit model for API communication
 class HabitModel {
+  final String id;
   final String name;
   final String category;
   final String? time;
   final String emoji;
 
   HabitModel({
+    required this.id,
     required this.name,
     required this.category,
     this.time,
@@ -16,6 +18,7 @@ class HabitModel {
 
   factory HabitModel.fromJson(Map<String, dynamic> json) {
     return HabitModel(
+      id: json['id'] ?? json['_id'] ?? '',
       name: json['name'] ?? '',
       category: json['category'] ?? '',
       time: json['time'],
@@ -34,6 +37,7 @@ class HabitModel {
 
   HabitEntity toEntity() {
     return HabitEntity(
+      id: id,
       name: name,
       category: category,
       time: time,
@@ -43,6 +47,7 @@ class HabitModel {
 
   static HabitModel fromEntity(HabitEntity entity) {
     return HabitModel(
+      id: entity.id,
       name: entity.name,
       category: entity.category,
       time: entity.time,

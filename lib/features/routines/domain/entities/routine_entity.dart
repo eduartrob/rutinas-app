@@ -2,12 +2,14 @@ import 'package:equatable/equatable.dart';
 
 /// Habit entity for domain layer
 class HabitEntity extends Equatable {
+  final String id;
   final String name;
   final String category;
   final String? time;
   final String emoji;
 
   const HabitEntity({
+    required this.id,
     required this.name,
     required this.category,
     this.time,
@@ -15,7 +17,7 @@ class HabitEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [name, category, time, emoji];
+  List<Object?> get props => [id, name, category, time, emoji];
 }
 
 /// Routine entity for domain layer

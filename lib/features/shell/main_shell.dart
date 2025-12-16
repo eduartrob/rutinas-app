@@ -78,7 +78,7 @@ class _HomePageState extends State<HomePage> {
     
     for (final routine in activeRoutines) {
       final habitData = routine.habits.map((h) => (
-        id: h.name.hashCode.toString(),
+        id: h.id,
         name: h.name,
         emoji: h.emoji,
         time: h.time,
@@ -218,6 +218,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     child: Column(
                       children: allHabitsWithIds.map((item) => _HabitTile(
+                        habitId: item.habit.id,
                         emoji: item.habit.emoji,
                         name: item.habit.name,
                         time: item.habit.time ?? '--:--',
@@ -449,6 +450,7 @@ class _HomePageState extends State<HomePage> {
 }
 
 class _HabitTile extends StatelessWidget {
+  final String habitId;
   final String emoji;
   final String name;
   final String time;
@@ -456,6 +458,7 @@ class _HabitTile extends StatelessWidget {
   final VoidCallback? onCompletionChanged;
 
   const _HabitTile({
+    required this.habitId,
     required this.emoji,
     required this.name,
     required this.time,
@@ -466,7 +469,6 @@ class _HabitTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final habitId = name.hashCode.toString();
     
     return Consumer<ProgressProvider>(
       builder: (context, provider, _) {
