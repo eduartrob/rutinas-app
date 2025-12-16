@@ -337,18 +337,37 @@ class _HomePageState extends State<HomePage> {
         'emoji': '🌅',
         'habitCount': 5,
         'categories': ['Salud', 'Productividad'],
+        'habits': [
+          {'name': 'Despertar temprano', 'emoji': '⏰', 'time': '06:00 AM', 'category': 'productividad'},
+          {'name': 'Beber agua', 'emoji': '💧', 'time': '06:05 AM', 'category': 'salud'},
+          {'name': 'Ejercicio 30 min', 'emoji': '🏃', 'time': '06:15 AM', 'category': 'salud'},
+          {'name': 'Ducha fría', 'emoji': '🚿', 'time': '06:45 AM', 'category': 'salud'},
+          {'name': 'Desayuno saludable', 'emoji': '🥗', 'time': '07:00 AM', 'category': 'salud'},
+        ],
       },
       {
         'name': 'Rutina Nocturna de Descanso',
         'emoji': '🌙',
         'habitCount': 4,
         'categories': ['Salud', 'Bienestar'],
+        'habits': [
+          {'name': 'Apagar pantallas', 'emoji': '📱', 'time': '09:00 PM', 'category': 'bienestar'},
+          {'name': 'Lectura 20 min', 'emoji': '📖', 'time': '09:15 PM', 'category': 'bienestar'},
+          {'name': 'Meditación', 'emoji': '🧘', 'time': '09:35 PM', 'category': 'salud_mental'},
+          {'name': 'Preparar ropa mañana', 'emoji': '👔', 'time': '09:50 PM', 'category': 'productividad'},
+        ],
       },
       {
         'name': 'Hábitos de Estudio',
         'emoji': '📚',
         'habitCount': 4,
         'categories': ['Estudio', 'Productividad'],
+        'habits': [
+          {'name': 'Revisar agenda', 'emoji': '📋', 'time': '08:00 AM', 'category': 'productividad'},
+          {'name': 'Pomodoro 25 min', 'emoji': '🍅', 'category': 'estudio'},
+          {'name': 'Tomar notas', 'emoji': '✍️', 'category': 'estudio'},
+          {'name': 'Repasar aprendido', 'emoji': '🔄', 'time': '06:00 PM', 'category': 'estudio'},
+        ],
       },
     ];
 

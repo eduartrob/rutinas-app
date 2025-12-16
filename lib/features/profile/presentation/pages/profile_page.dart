@@ -312,6 +312,13 @@ class _ProfilePageState extends State<ProfilePage> {
                 
                 // Botón de cerrar sesión
                 _buildLogoutButton(context, colorScheme),
+                
+                const SizedBox(height: 16),
+                
+                // Botón de eliminar cuenta
+                _buildDeleteAccountButton(context, colorScheme),
+                
+                const SizedBox(height: 40),
               ],
             ),
           );
@@ -602,5 +609,138 @@ class _ProfilePageState extends State<ProfilePage> {
         widget.onLogout!();
       }
     }
+  }
+
+  void _handleDeleteAccount(BuildContext context) async {
+    final colorScheme = Theme.of(context).colorScheme;
+    
+    // First confirmation
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Row(
+          children: [
+            Icon(Icons.warning_amber_rounded, color: colorScheme.error),
+            const SizedBox(width: 8),
+            const Text('Eliminar Cuenta'),
+          ],
+        ),
+        content: const Text(
+          '¿Estás seguro que deseas eliminar tu cuenta?\n\n'
+          'Esta acción es IRREVERSIBLE y eliminará:\n'
+          '• Todas tus rutinas\n'
+          '• Todos tus hábitos\n'
+          '• Todo tu progreso\n'
+          '• Tu foto de perfil',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(
+              'Eliminar Cuenta',
+              style: TextStyle(color: colorScheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true || !mounted) return;
+
+    // Second confirmation with typing
+    final confirmController = TextEditingController();
+    final finalConfirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Confirmar Eliminación', style: TextStyle(color: colorScheme.error)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Escribe "ELIMINAR" para confirmar:'),
+            const SizedBox(height: 12),
+            TextField(
+              controller: confirmController,
+              decoration: const InputDecoration(
+                hintText: 'ELIMINAR',
+                border: OutlineInputBorder(),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancelar'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: colorScheme.error),
+            onPressed: () {
+              if (confirmController.text.toUpperCase() == 'ELIMINAR') {
+                Navigator.pop(context, true);
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Debes escribir "ELIMINAR" exactamente')),
+                );
+              }
+            },
+            child: const Text('Eliminar Permanentemente', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+
+    if (finalConfirm == true && mounted) {
+      // Call delete account API
+      final loginProvider = context.read<LoginProvider>();
+      final success = await loginProvider.deleteAccount();
+      
+      if (mounted) {
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Cuenta eliminada correctamente'),
+              backgroundColor: Colors.green,
+            ),
+          );
+          if (widget.onLogout != null) {
+            widget.onLogout!();
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(loginProvider.error ?? 'Error al eliminar cuenta'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Widget _buildDeleteAccountButton(BuildContext context, ColorScheme colorScheme) {
+    return SizedBox(
+      width: double.infinity,
+      height: 56,
+      child: TextButton(
+        onPressed: () => _handleDeleteAccount(context),
+        style: TextButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        child: Text(
+          'Eliminar Cuenta',
+          style: TextStyle(
+            color: colorScheme.error.withOpacity(0.7),
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
   }
 }

@@ -214,4 +214,45 @@ class LoginProvider extends ChangeNotifier {
       print('❌ Error de excepción al subir imagen: $e');
     }
   }
+
+  // Alias for error message
+  String? get error => _errorMessage;
+
+  /// Delete user account permanently
+  Future<bool> deleteAccount() async {
+    try {
+      final token = await _authService.getToken();
+      if (token == null) {
+        _errorMessage = 'No autenticado';
+        notifyListeners();
+        return false;
+      }
+
+      final response = await http.delete(
+        Uri.parse('${ApiConfig.apiUrl}/users/delete-account'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Clear all local data
+        await _authService.clearAll();
+        _user = null;
+        _status = LoginStatus.initial;
+        notifyListeners();
+        return true;
+      } else {
+        final data = jsonDecode(response.body);
+        _errorMessage = data['message'] ?? 'Error al eliminar cuenta';
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      _errorMessage = 'Error de conexión: $e';
+      notifyListeners();
+      return false;
+    }
+  }
 }
