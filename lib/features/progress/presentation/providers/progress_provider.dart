@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../data/datasources/progress_remote_datasource.dart';
+import '../../data/models/progress_model.dart';
 import 'package:app/core/services/local_storage_service.dart';
 
 /// Provider for progress/habit completion tracking
@@ -9,14 +10,14 @@ class ProgressProvider extends ChangeNotifier {
 
   ProgressProvider({required this.datasource});
 
-  ProgressStats _stats = ProgressStats.empty();
+  ProgressStatsModel _stats = ProgressStatsModel.empty();
   Set<String> _completedHabitIds = {};
   int _todayCompletedCount = 0;
   bool _isLoading = false;
   String? _errorMessage;
 
   // Getters
-  ProgressStats get stats => _stats;
+  ProgressStatsModel get stats => _stats;
   Set<String> get completedHabitIds => _completedHabitIds;
   int get todayCompletedCount => _todayCompletedCount;
   bool get isLoading => _isLoading;
@@ -115,7 +116,7 @@ class ProgressProvider extends ChangeNotifier {
       _errorMessage = e.toString();
       
       // Use empty stats with local count if API fails
-      _stats = ProgressStats(
+      _stats = ProgressStatsModel(
         currentStreak: 0,
         successRate: 0,
         completedThisPeriod: _todayCompletedCount,

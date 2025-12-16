@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:app/features/progress/presentation/providers/progress_provider.dart';
-import 'package:app/features/progress/data/datasources/progress_remote_datasource.dart';
+import 'package:app/features/progress/data/models/progress_model.dart';
 import 'package:app/core/services/local_storage_service.dart';
 import 'package:app/features/shell/widgets/widgets.dart';
 
@@ -137,7 +137,7 @@ class _StatsPageState extends State<StatsPage> {
     );
   }
 
-  Widget _buildDailySummary(ColorScheme colorScheme, ProgressProvider provider, ProgressStats stats) {
+  Widget _buildDailySummary(ColorScheme colorScheme, ProgressProvider provider, ProgressStatsModel stats) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -180,7 +180,7 @@ class _StatsPageState extends State<StatsPage> {
     );
   }
 
-  Widget _buildStatCards(ProgressStats stats) {
+  Widget _buildStatCards(ProgressStatsModel stats) {
     return Row(
       children: [
         Expanded(
@@ -202,7 +202,7 @@ class _StatsPageState extends State<StatsPage> {
     );
   }
 
-  Widget _buildWeeklySummary(ColorScheme colorScheme, ProgressStats stats) {
+  Widget _buildWeeklySummary(ColorScheme colorScheme, ProgressStatsModel stats) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -252,7 +252,7 @@ class _StatsPageState extends State<StatsPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 crossAxisAlignment: CrossAxisAlignment.end,
-                children: _buildDailyBars(stats.dailyCompletions),
+                children: _buildDailyBars(stats.dailyCompletions.cast<DailyCompletionModel>()),
               ),
             )
           else
@@ -270,7 +270,7 @@ class _StatsPageState extends State<StatsPage> {
     );
   }
 
-  Widget _buildHabitsBreakdown(ColorScheme colorScheme, ProgressStats stats) {
+  Widget _buildHabitsBreakdown(ColorScheme colorScheme, ProgressStatsModel stats) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -308,7 +308,7 @@ class _StatsPageState extends State<StatsPage> {
     );
   }
 
-  List<Widget> _buildDailyBars(List<DailyCompletion> completions) {
+  List<Widget> _buildDailyBars(List<DailyCompletionModel> completions) {
     final maxCount = completions.map((c) => c.count).reduce((a, b) => a > b ? a : b);
     final days = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
     
