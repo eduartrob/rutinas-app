@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:provider/provider.dart';
 import 'package:app/features/routines/presentation/pages/routines_page.dart';
 import 'package:app/features/routines/presentation/pages/routine_detail_page.dart';
+import 'package:app/features/routines/presentation/pages/popular_routine_detail_page.dart';
 import 'package:app/features/routines/presentation/providers/routines_provider.dart';
 import 'package:app/features/routines/domain/entities/routine_entity.dart';
 import 'package:app/features/progress/presentation/providers/progress_provider.dart';
@@ -11,6 +12,7 @@ import 'package:app/features/profile/presentation/pages/profile_page.dart';
 import 'package:app/features/auth/login/presentation/providers/login_provider.dart';
 import 'package:app/core/services/notification_service.dart';
 import 'package:app/core/services/local_storage_service.dart';
+import 'package:app/core/widgets/animated_entrance.dart';
 
 /// Página de inicio mostrando los hábitos del día con progreso
 class HomePage extends StatefulWidget {
@@ -153,12 +155,15 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 24),
 
               // Sección de rutina de hoy
-              Text(
-                'Tu Rutina de Hoy',
-                style: TextStyle(
-                  color: colorScheme.onSurface,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              AnimatedEntrance(
+                delay: const Duration(milliseconds: 200),
+                child: Text(
+                  'Tu Rutina de Hoy',
+                  style: TextStyle(
+                    color: colorScheme.onSurface,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -232,12 +237,15 @@ class _HomePageState extends State<HomePage> {
               const SizedBox(height: 32),
 
               // Sección de rutinas activas
-              Text(
-                'Rutinas Activas',
-                style: TextStyle(
-                  color: colorScheme.onSurface,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+              AnimatedEntrance(
+                delay: const Duration(milliseconds: 400),
+                child: Text(
+                  'Rutinas Activas',
+                  style: TextStyle(
+                    color: colorScheme.onSurface,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -353,10 +361,10 @@ class _HomePageState extends State<HomePage> {
           final template = templates[index];
           return GestureDetector(
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text('Próximamente: usar "${template['name']}"'),
-                  backgroundColor: colorScheme.primary,
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => PopularRoutineDetailPage(template: template),
                 ),
               );
             },

@@ -64,6 +64,7 @@ class RoutineModel {
   final List<HabitModel> habits;
   final bool isActive;
   final List<String> categories;
+  final String? color;
   final DateTime createdAt;
 
   RoutineModel({
@@ -73,6 +74,7 @@ class RoutineModel {
     required this.habits,
     required this.isActive,
     required this.categories,
+    this.color,
     required this.createdAt,
   });
 
@@ -88,6 +90,7 @@ class RoutineModel {
       categories: (json['categories'] as List<dynamic>?)
           ?.map((c) => c.toString())
           .toList() ?? [],
+      color: json['color'],
       createdAt: json['createdAt'] != null 
           ? DateTime.parse(json['createdAt']) 
           : DateTime.now(),
@@ -100,6 +103,7 @@ class RoutineModel {
       'habits': habits.map((h) => h.toJson()).toList(),
       'isActive': isActive,
       'categories': categories,
+      if (color != null) 'color': color,
     };
   }
 
@@ -111,6 +115,7 @@ class RoutineModel {
       habits: habits.map((h) => h.toEntity()).toList(),
       isActive: isActive,
       categories: categories,
+      color: color,
       createdAt: createdAt,
     );
   }

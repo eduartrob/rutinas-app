@@ -28,6 +28,7 @@ class RoutineEntity extends Equatable {
   final List<HabitEntity> habits;
   final bool isActive;
   final List<String> categories;
+  final String? color; // Hex color for customization
   final DateTime createdAt;
 
   const RoutineEntity({
@@ -37,9 +38,11 @@ class RoutineEntity extends Equatable {
     required this.habits,
     required this.isActive,
     required this.categories,
+    this.color,
     required this.createdAt,
   });
 
   @override
-  List<Object?> get props => [id, name, userId, habits, isActive, categories, createdAt];
+  List<Object?> get props => [id, name, userId, habits, isActive, categories, color, createdAt];
 }
+
