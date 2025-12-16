@@ -5,14 +5,6 @@ import 'package:http/http.dart' as http;
 // Core
 import '../core/network/base_api_client.dart';
 
-// Weather feature (existing)
-import '../features/data/datasource/service_get.dart';
-import '../features/data/datasource/weather_service_impl.dart';
-import '../features/data/repository/weather_repository_impl.dart';
-import '../features/domain/useCase/get_weather.dart';
-import '../features/domain/repository/weather_repository.dart';
-import '../features/presentation/providers/weather_provider.dart';
-
 // Auth - Login feature
 import '../features/auth/login/data/datasources/login_remote_datasource.dart';
 import '../features/auth/login/data/repositories/login_repository_impl.dart';
@@ -59,12 +51,6 @@ class AppModule {
   late http.Client httpClient;
   late BaseApiClient apiClient;
 
-  // Weather feature (existing)
-  late WeatherNotifier weatherNotifier;
-  late GetCurrentWeather getWeatherUseCase;
-  late WeatherRepository weatherRepository;
-  late WeatherService weatherService;
-
   // Login feature
   late LoginProvider loginProvider;
   late LoginUseCase loginUseCase;
@@ -103,12 +89,6 @@ class AppModule {
     // Core
     httpClient = http.Client();
     apiClient = BaseApiClient();
-
-    // Weather feature (existing)
-    weatherService = WeatherServiceImpl(apiClient: apiClient);
-    weatherRepository = WeatherRepositoryImpl(weatherService: weatherService);
-    getWeatherUseCase = GetCurrentWeather(repository: weatherRepository);
-    weatherNotifier = WeatherNotifier(getWeatherUseCase: getWeatherUseCase);
 
     // Login feature
     loginRemoteDatasource = LoginRemoteDatasourceImpl(apiClient: apiClient);

@@ -20,9 +20,6 @@ import 'features/routines/presentation/providers/routines_provider.dart';
 // Progress Provider
 import 'features/progress/presentation/providers/progress_provider.dart';
 
-// Weather Provider (existing)
-import 'features/presentation/providers/weather_provider.dart';
-
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -57,10 +54,6 @@ class MyApp extends StatelessWidget {
         // Progress Provider
         ChangeNotifierProvider<ProgressProvider>(
           create: (_) => appModule.progressProvider,
-        ),
-        // Weather Provider (existing)
-        ChangeNotifierProvider<WeatherNotifier>(
-          create: (_) => appModule.weatherNotifier,
         ),
       ],
       child: Consumer<ThemeProvider>(
