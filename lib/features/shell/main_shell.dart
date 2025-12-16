@@ -13,6 +13,7 @@ import 'package:app/features/auth/login/presentation/providers/login_provider.da
 import 'package:app/core/services/notification_service.dart';
 import 'package:app/core/services/local_storage_service.dart';
 import 'package:app/core/widgets/animated_entrance.dart';
+import 'package:app/features/routines/data/datasources/popular_routines_datasource.dart';
 
 /// Página de inicio mostrando los hábitos del día con progreso
 class HomePage extends StatefulWidget {
@@ -25,7 +26,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final NotificationService _notificationService = NotificationService();
   final LocalStorageService _localStorage = LocalStorageService();
+  final PopularRoutinesDatasource _popularDatasource = PopularRoutinesDatasource();
   int _pendingSyncCount = 0;
+  List<Map<String, dynamic>> _popularRoutines = [];
 
   @override
   void initState() {
@@ -44,6 +47,14 @@ class _HomePageState extends State<HomePage> {
     _pendingSyncCount = await _localStorage.getPendingSyncCount();
     if (_pendingSyncCount > 0) {
       _trySync();
+    }
+    
+    // Load popular routines from API
+    final popularRoutines = await _popularDatasource.getPopularRoutines();
+    if (mounted) {
+      setState(() {
+        _popularRoutines = popularRoutines;
+      });
     }
     
     // Inicializar notificaciones
@@ -331,45 +342,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildPopularRoutinesSection(ColorScheme colorScheme) {
-    final templates = [
-      {
-        'name': 'Rutina Matutina Productiva',
-        'emoji': '🌅',
-        'habitCount': 5,
-        'categories': ['Salud', 'Productividad'],
-        'habits': [
-          {'name': 'Despertar temprano', 'emoji': '⏰', 'time': '06:00 AM', 'category': 'productividad'},
-          {'name': 'Beber agua', 'emoji': '💧', 'time': '06:05 AM', 'category': 'salud'},
-          {'name': 'Ejercicio 30 min', 'emoji': '🏃', 'time': '06:15 AM', 'category': 'salud'},
-          {'name': 'Ducha fría', 'emoji': '🚿', 'time': '06:45 AM', 'category': 'salud'},
-          {'name': 'Desayuno saludable', 'emoji': '🥗', 'time': '07:00 AM', 'category': 'salud'},
-        ],
-      },
-      {
-        'name': 'Rutina Nocturna de Descanso',
-        'emoji': '🌙',
-        'habitCount': 4,
-        'categories': ['Salud', 'Bienestar'],
-        'habits': [
-          {'name': 'Apagar pantallas', 'emoji': '📱', 'time': '09:00 PM', 'category': 'bienestar'},
-          {'name': 'Lectura 20 min', 'emoji': '📖', 'time': '09:15 PM', 'category': 'bienestar'},
-          {'name': 'Meditación', 'emoji': '🧘', 'time': '09:35 PM', 'category': 'salud_mental'},
-          {'name': 'Preparar ropa mañana', 'emoji': '👔', 'time': '09:50 PM', 'category': 'productividad'},
-        ],
-      },
-      {
-        'name': 'Hábitos de Estudio',
-        'emoji': '📚',
-        'habitCount': 4,
-        'categories': ['Estudio', 'Productividad'],
-        'habits': [
-          {'name': 'Revisar agenda', 'emoji': '📋', 'time': '08:00 AM', 'category': 'productividad'},
-          {'name': 'Pomodoro 25 min', 'emoji': '🍅', 'category': 'estudio'},
-          {'name': 'Tomar notas', 'emoji': '✍️', 'category': 'estudio'},
-          {'name': 'Repasar aprendido', 'emoji': '🔄', 'time': '06:00 PM', 'category': 'estudio'},
-        ],
-      },
-    ];
+    // Use API data, fallback to empty if loading
+    final templates = _popularRoutines.isEmpty
+        ? [
+            // Fallback while loading
+            {'name': 'Cargando...', 'emoji': '⏳', 'habitCount': 0, 'categories': <String>[], 'habits': []},
+          ]
+        : _popularRoutines;
+
+    if (_popularRoutines.isEmpty) {
+      return SizedBox(
+        height: 120,
+        child: Center(
+          child: CircularProgressIndicator(color: colorScheme.primary),
+        ),
+      );
+    }
 
     return SizedBox(
       height: 120,
